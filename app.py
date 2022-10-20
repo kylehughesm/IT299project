@@ -166,6 +166,7 @@ def logout():
     session.pop('customerName', None)
     session.pop('employeeName', None)
     session.pop('loggedin', None)
+    session.pop('shoppingCart', None)
 
     return redirect(url_for('index'))
 
@@ -184,14 +185,14 @@ def customer_session(sessionID):
 
     return render_template('customer_session.html', images=images, price=price)
 
-@app.route('/customer/add/<filename>')
-def add_to_cart(filename):
+@app.route('/customer/add/<filename>/<float:price>')
+def add_to_cart(filename, price):
 
     if 'shoppingCart' not in session:
         session['shoppingCart'] = []
 
-    if filename not in session['shoppingCart']:
-        session['shoppingCart'].append(filename)
+    if (filename, price) not in session['shoppingCart']:
+        session['shoppingCart'].append((filename, price))
         session.modified = True
 
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
@@ -206,9 +207,17 @@ def shopping_cart():
 
     return render_template('shopping_cart.html')
 
-@app.route('/remove/<filename>')
-def remove(filename):
-    session['shoppingCart'].remove(filename)
+@app.route('/remove/<filename>/<float:price>')
+def remove(filename, price):
+    if (filename, price) in session['shoppingCart']:
+        session['shoppingCart'].remove((filename, price))
+        session.modified = True
+        
+    return redirect(url_for('shopping_cart'))
+
+@app.route('/empty_cart/')
+def empty():
+    session.pop('shoppingCart', None)
     session.modified = True
 
     return redirect(url_for('shopping_cart'))

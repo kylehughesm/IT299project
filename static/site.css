@@ -15,7 +15,7 @@ header {
 	}
 
 main {
-	width: 80%;
+	width: 70%;
 	background-color: #ffffff;
 	float: left;
 	padding: 5px;
@@ -66,3 +66,20 @@ nav ul li a:hover, nav button:hover {
 	width: 150px;
 	padding: 1px;
 }
+
+table {
+	width: 90%;
+	}
+
+.picture {
+	width: 250px;
+	}
+
+.cart_price {
+	text-align: right;
+	padding: 10px
+	}
+
+.remove {
+	padding: 10px;
+	}
