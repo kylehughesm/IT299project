@@ -130,11 +130,11 @@ def customer():
         
         results = cursor.fetchall()
 
-        return render_template("customer.html", customerName=session['customerName'], sessions=results)
+        return render_template("customer.html", customerName=session['customerName'], sessions=results, customer=customer)
 
     return redirect(url_for('customer_login'))
 
-@app.route('/customer_login', methods=['GET', 'POST'])
+@app.route('/customer_login/', methods=['GET', 'POST'])
 def customer_login():
     if request.method == 'POST':
         username = request.form['username']
@@ -160,7 +160,20 @@ def customer_login():
 
     return render_template("customer_login.html")
 
-@app.route('/logout')
+@app.route('/customer/update/<int:customerID>/', methods=['GET', 'POST'])
+def customer_update(customerID):
+    if request.method == 'POST':
+        email = request.form['email']
+
+        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+        cursor.execute('UPDATE customer SET email = (%s) WHERE customerID = (%s)', (email, customerID))
+        mysql.connection.commit()
+
+        return redirect(url_for('customer'))
+
+    return render_template("customer_update.html", customerID=customerID)
+
+@app.route('/logout/')
 def logout():
     # remove the username from the session if it's there
     session.pop('customerName', None)
@@ -170,7 +183,7 @@ def logout():
 
     return redirect(url_for('index'))
 
-@app.route('/customer/<int:sessionID>')
+@app.route('/customer/<int:sessionID>/')
 def customer_session(sessionID):
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
     cursor.execute('SELECT * FROM photos Where sessionID = (%s)', (sessionID,))
@@ -185,7 +198,7 @@ def customer_session(sessionID):
 
     return render_template('customer_session.html', images=images, price=price)
 
-@app.route('/customer/add/<filename>/<float:price>')
+@app.route('/customer/add/<filename>/<float:price>/')
 def add_to_cart(filename, price):
 
     if 'shoppingCart' not in session:
@@ -207,7 +220,7 @@ def shopping_cart():
 
     return render_template('shopping_cart.html')
 
-@app.route('/remove/<filename>/<float:price>')
+@app.route('/remove/<filename>/<float:price>/')
 def remove(filename, price):
     if (filename, price) in session['shoppingCart']:
         session['shoppingCart'].remove((filename, price))

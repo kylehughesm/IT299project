@@ -7,6 +7,9 @@
 {% endblock %}
 
 {% block main %}
+
+    <p>Email:  {{ customer['email'] }}</p>
+    <a href = "{{ url_for('customer_update', customerID=customer['customerID']) }}">Edit Email</a>
     <table>
         <tr>
             <th>Choose Session</th>
